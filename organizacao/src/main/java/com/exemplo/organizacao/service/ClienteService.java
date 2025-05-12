@@ -2,6 +2,7 @@ package com.exemplo.organizacao.service;
 
 import com.exemplo.organizacao.dto.ClienteDto;
 import com.exemplo.organizacao.dto.ResponseCreateClienteDto;
+import com.exemplo.organizacao.mapper.ClienteMapperStruct;
 import com.exemplo.organizacao.model.Cliente;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,20 +15,13 @@ public class ClienteService {
 
     @Autowired
     private ClienteRepository clienteRepository;
+    @Autowired
+    private ClienteMapperStruct clienteMapperStruct;
 
     public ResponseCreateClienteDto salvar(ClienteDto dto) {
-        Cliente cliente = new Cliente();
-        cliente.setNome(dto.getNome());
-        cliente.setCpf(dto.getCpf());
-        cliente.setPhone(dto.getPhone());
-
-        Cliente salvo = clienteRepository.save(cliente);
-
-        ResponseCreateClienteDto resposta = new ResponseCreateClienteDto();
-        resposta.setId(salvo.getId());
-        resposta.setNome(salvo.getNome());
-        resposta.setPhone(salvo.getPhone());
-        return resposta;
+        Cliente cliente = clienteMapperStruct.toEntity(dto);
+        Cliente clienteSalvo = clienteRepository.save(cliente);
+        return clienteMapperStruct.toResponseCreateClienteDto(clienteSalvo);
     }
 
     public ClienteDto buscarClientePorId(UUID id) {
